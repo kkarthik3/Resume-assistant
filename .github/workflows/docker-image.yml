@@ -23,8 +23,8 @@ jobs:
       - name: Build Docker image
         run: |
           SHORT_SHA=${GITHUB_SHA::7}
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/Resume_assistant:${SHORT_SHA} .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/resume_assistant:${SHORT_SHA} .
           
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/Resume_assistant:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/resume_assistant:latest
