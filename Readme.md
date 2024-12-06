@@ -29,17 +29,14 @@ This project is a **chatbot platform** that leverages vector-based search and na
 - ⚡ **FastAPI**: Framework for building API endpoints.
 - 🗄️ **MongoDB**: Database for storing text embeddings and metadata.
 - 🔗 **LangChain**: To handle embeddings and document structuring.
+- 🕸️ **Langgraph** : To handle The workflow of the LLM
 - ☁️ **Boto3**: AWS SDK for Python, if any AWS services are needed.
 - 🤗 **Hugging Face Embeddings**: For generating text embeddings.
 - 💬 **ChatGroq**: For natural language generation based on user queries.
 - 🔐 **dotenv**: For managing environment variables securely.
 
-## Project Structure 📁
-
-- 📱 **app.py**: Contains the main functions for PDF data loading, chunking, embedding generation, and MongoDB indexing.
-- 📄 **pdf_extractor.py**: Defines PDFWithLinksLoader class to download and process the PDF document, extracting text and hyperlinks.
-- 🔍 **query.py**: Implements the query retrieval process and integrates ChatGroq for generating responses.
-- 🌐 **api.py**: FastAPI endpoints for querying and refreshing data.
+## Graph Structure 📁
+![Graph Structure](graph.png)
 
 ## Setup and Installation ⚙️
 
