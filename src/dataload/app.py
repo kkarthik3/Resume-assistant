@@ -1,22 +1,13 @@
-import boto3
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from pdf_extractor import PDFWithLinksLoader
-from pymongo import MongoClient
+from src.dataload.pdf_extractor import PDFWithLinksLoader
 from dotenv import load_dotenv
-import os 
 from pymongo.operations import SearchIndexModel
 import time
+from apis.dbconnection import connect_to_mongo
+from apis.model import embeddings
+
 load_dotenv()
 
-embedding_model_name = 'jinaai/jina-embeddings-v2-base-en'
-
-embeddings = HuggingFaceEmbeddings(model_name=embedding_model_name, model_kwargs={'device': 'cpu'})
-
-def connect_to_mongo():
-    client = MongoClient(os.getenv("MONGO_URI"))
-    collection = client["portfolio"]["test"]
-    return client, collection
 
 def get_embeddings(text):
     return embeddings.embed_query(text)

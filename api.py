@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from app import main as refresh_data
-from query import generate_rag_response
+from src.dataload.app import main as refresh_data
 import os
 import uvicorn
 from pydantic import BaseModel
+from src.langgraph_structure import lang_app
 
 app = FastAPI()
 security = HTTPBasic()
@@ -22,24 +22,38 @@ class QueryRequest(BaseModel):
     message: str
     chatid : str
 
-ids = []
-#session
-def is_new_session(chatid: str) -> bool:
-    if chatid not in ids:
-        ids.append(chatid)
-        if len(ids) > 3:
-            ids.pop(0)
-        return True
-    return False
-    
+_printed = set()
+
+def _print_event(event: dict, _printed: set, max_length=1500):
+    current_state = event.get("dialog_state")
+    if current_state:
+        print("Currently in: ", current_state[-1])
+    message = event.get("messages")
+    if message:
+        if isinstance(message, list):
+            message = message[-1]
+        if message.id not in _printed:
+            msg_repr = message.pretty_repr(html=True)
+            if len(msg_repr) > max_length:
+                msg_repr = msg_repr[:max_length] + " ... (truncated)"
+            print(msg_repr)
+            _printed.add(message.id)
+            return event
+        
 # Endpoint for querying the chatbot
 @app.post("/query")
 def query_endpoint(query: QueryRequest, credentials: HTTPBasicCredentials = Depends(authenticate)):
-    try:
-        response = generate_rag_response(user_query=query.message, refresh=is_new_session(query.chatid))
-        return {"response": response}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    config = {"configurable": {"thread_id": query.chatid}}
+    events = lang_app.stream({"messages": ("user", query.message)}, config, stream_mode="values")
+    for event in events:
+        _print_event(event, _printed)
+
+    snapshot = lang_app.get_state(config=config)
+
+    print(snapshot)
+    responses = snapshot.values
+    return{"message": snapshot.values["messages"][-1].content}
+
 
 # Endpoint to refresh the data
 @app.get("/refresh")
