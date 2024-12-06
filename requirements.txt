@@ -10,8 +10,7 @@ langgraph==0.2.56
 pydantic==2.10.3
 pymongo==4.10.1
 python-dotenv==1.0.1
-python_dateutil==2.8.2
-python_dateutil==2.9.0.post0
+python_dateutil>=2.8.2,<3.0
 pytz==2024.1
 Requests==2.32.3
 typing_extensions==4.12.2
